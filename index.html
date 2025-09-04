@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission 99</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #121212;
+            color: #E0E0E0;
+            padding-top: 6rem;
+            padding-bottom: 2rem; /* Adjusted for no nav bar */
+        }
+        .top-box {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 10;
+        }
+        .mission-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 69, 0, 0.4);
+        }
+        .bijli-fire {
+            -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2L6 12h5l-1 10 9-15h-5z"/></svg>');
+            mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2L6 12h5l-1 10 9-15h-5z"/></svg>');
+            width: 1.5rem;
+            height: 1.5rem;
+            display: inline-block;
+            transition: all 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-950 text-white flex flex-col items-center justify-center p-4 min-h-screen">
+
+    <!-- शीर्ष ग्रे बॉक्स - निश्चित हेडर -->
+    <header class="top-box bg-gray-800 p-4 rounded-b-3xl shadow-2xl w-full max-w-lg mx-auto">
+        <div class="text-center font-bold text-4xl text-white" id="clock"></div>
+        <div class="text-center text-sm text-gray-400 mt-1" id="date"></div>
+        <div class="mt-4 text-center text-md text-gray-200 font-semibold" id="current-task">वर्तमान कार्य खोजा जा रहा है...</div>
+        <div class="w-full h-3 bg-gray-600 rounded-full mt-4 overflow-hidden shadow-inner">
+            <div id="progress-bar" class="h-full bg-orange-500 transition-all duration-300 ease-in-out" style="width: 0%;"></div>
+        </div>
+    </header>
+
+    <!-- मुख्य सामग्री क्षेत्र -->
+    <main class="w-full max-w-lg mt-8 mb-8 p-4">
+        <!-- लाल बॉक्स -->
+        <div class="bg-red-700 p-1.5 rounded-3xl shadow-2xl">
+            <img src="https://image.jimcdn.com/app/cms/image/transf/dimension=960x10000:format=jpg/path/s3700bd24dcd028c7/image/ib03cda18a66ba8ac/version/1748593263/image.jpg" class="w-full h-auto max-h-196 mx-auto rounded-xl shadow-lg object-contain">
+        </div>
+
+        <!-- मिशन बटन -->
+        <a href="https://toppera.jimdofree.com/2025/05/29/study-yt/https://toppera.jimdofree.com/2025/05/29/study-yt/" class="w-full block mt-8">
+            <button class="mission-button bg-red-700 text-white font-extrabold text-2xl py-5 rounded-xl shadow-lg transition-all duration-300 ease-in-out w-full flex items-center justify-center space-x-2">
+                <span class="bijli-fire text-yellow-400 animate-pulse"></span>
+                <span>MISSION 99</span>
+                <span class="bijli-fire text-yellow-400 animate-pulse"></span>
+            </button>
+        </a>
+    </main>
+
+    <script>
+        // स्क्रिप्ट जो घड़ी और कार्य को अपडेट करती है
+        document.addEventListener('DOMContentLoaded', () => {
+            const clockEl = document.getElementById('clock');
+            const dateEl = document.getElementById('date');
+            const taskEl = document.getElementById('current-task');
+            const progressBarEl = document.getElementById('progress-bar');
+            
+            // दिन के हिसाब से कार्यसूची
+            const timetable = [
+                { start: "05:00", end: "06:00", task: "उठना, ChatGpt-Passage, Translation" },
+                { start: "06:00", end: "06:45", task: "Study English And Grammar" },
+                { start: "06:45", end: "07:30", task: "Ready For School - Eating" },
+                { start: "07:30", end: "13:30", task: "School - Read Your Bells" },
+                { start: "13:30", end: "14:00", task: "Home Eat, Fresh Now" },
+                { start: "14:00", end: "14:30", task: "1 Shorts For YouTube" },
+                { start: "14:30", end: "15:30", task: "Science-Study/YT/ChatGpt" },
+                { start: "15:30", end: "15:45", task: "Break For Drink, Walk" },
+                { start: "15:45", end: "16:30", task: "Math Practice - Concepts" },
+                { start: "16:30", end: "16:45", task: "Break For Walk Fresh" },
+                { start: "16:45", end: "17:30", task: "Study SST - ChatGpt/YouTube" },
+                { start: "17:30", end: "17:45", task: "Break - No Phone" },
+                { start: "17:45", end: "18:30", task: "Hindi - Literature And Grammar" },
+                { start: "18:30", end: "19:00", task: "Break - Eat" },
+                { start: "19:00", end: "20:30", task: "Live / Recorded Class - With PP" },
+                { start: "20:30", end: "21:00", task: "Dinner / Break" },
+                { start: "21:00", end: "24:00", task: "Sleep For Best and Fresh Mind" },
+                { start: "00:00", end: "05:00", task: "Sleep For Best and Fresh Mind" }
+            ];
+
+            const updateClockAndTask = () => {
+                const now = new Date();
+                
+                let hours = now.getHours();
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const seconds = String(now.getSeconds()).padStart(2, '0');
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12;
+                hours = hours ? hours : 12;
+                const formattedHours = String(hours).padStart(2, '0');
+                clockEl.textContent = `${formattedHours}:${minutes}:${seconds} ${ampm}`;
+
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                dateEl.textContent = now.toLocaleDateString('hi-IN', options);
+
+                const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
+                let currentTask = "Free Time";
+                let currentProgress = 0;
+
+                for (const slot of timetable) {
+                    const [startH, startM] = slot.start.split(':').map(Number);
+                    const [endH, endM] = slot.end.split(':').map(Number);
+                    
+                    let startMinutes = startH * 60 + startM;
+                    let endMinutes = endH * 60 + endM;
+
+                    if (startMinutes > endMinutes) {
+                        endMinutes += 24 * 60;
+                    }
+
+                    let adjustedCurrentTimeMinutes = currentTimeMinutes;
+                    if (startH > endH && currentTimeMinutes < startMinutes) {
+                        adjustedCurrentTimeMinutes += 24 * 60;
+                    }
+
+                    if (adjustedCurrentTimeMinutes >= startMinutes && adjustedCurrentTimeMinutes < endMinutes) {
+                        currentTask = slot.task;
+                        const totalDuration = endMinutes - startMinutes;
+                        const elapsedDuration = adjustedCurrentTimeMinutes - startMinutes;
+                        currentProgress = (elapsedDuration / totalDuration) * 100;
+                        break;
+                    }
+                }
+                
+                taskEl.textContent = currentTask;
+                progressBarEl.style.width = `${currentProgress}%`;
+            };
+
+            setInterval(updateClockAndTask, 1000);
+            updateClockAndTask();
+        });
+    </script>
+</body>
+</html>
+
